@@ -124,9 +124,7 @@ def anonimizar(texto):
                     break
             
             if eh_valido:
-                # Na IA, como o replace direto pode falhar se houver homônimos,
-                # registramos o achado. A substituição no texto seguro é feita
-                # com cuidado, mas aqui aplicaremos a regra geral.
+                # Registra o nome encontrado pela IA
                 registrar("NOME_PESSOA", ent.text, "BAIXO", (ent.start_char, ent.end_char))
 
     return achados, texto_tarjado
