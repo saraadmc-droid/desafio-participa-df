@@ -36,7 +36,7 @@ Regras de negócio para evitar Falsos Positivos:
 
 ---
 
-## ⚙️ O Pipeline de Processamento
+## O Pipeline de Processamento
 
 1.  **Entrada:** Texto cru (copiado de processos, e-mails ou PDFs).
 2.  **Processamento Híbrido:**
