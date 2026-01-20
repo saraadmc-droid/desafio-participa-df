@@ -1,0 +1,18 @@
+[
+    {
+        "texto": "O CPF do cliente é 123.456.789-09 e mora em Brasília.",
+        "labels": ["CPF", "LOC"]
+    },
+    {
+        "texto": "Entre em contato pelo email sara@teste.com ou telefone 9999-8888.",
+        "labels": ["E-MAIL", "TELEFONE"]
+    },
+    {
+        "texto": "O protocolo 21246328 não é um telefone.",
+        "labels": []
+    },
+    {
+        "texto": "Solicitante: João da Silva, residente na SQN 102.",
+        "labels": ["NOME_PESSOA", "ENDEREÇO"]
+    }
+]
