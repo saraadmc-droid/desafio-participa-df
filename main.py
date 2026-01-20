@@ -1,18 +1,22 @@
 import re
 import spacy
 
-# --- CONFIGURAÇÃO INICIAL ---
-print("Carregando cérebro da Inteligência Artificial...")
+# --- SETUP DO AMBIENTE ---
+print("Inicializando modelo de NLP...")
 try:
     nlp = spacy.load("pt_core_news_sm")
 except OSError:
-    print("ERRO: O modelo de IA não foi encontrado.")
-    print("Rode no Colab: !python -m spacy download pt_core_news_sm")
+    print("ERRO: Modelo 'pt_core_news_sm' não encontrado.")
+    print("Execute: python -m spacy download pt_core_news_sm")
+    # Fallback para evitar crash imediato
     import en_core_web_sm
     nlp = en_core_web_sm.load()
 
-def validar_cpf(numeros):
-    """Auditoria Matemática: Verifica os dois dígitos verificadores do CPF."""
+def validate_mod11(numeros):
+    """
+    Algoritmo de validação de CPF (Módulo 11).
+    Retorna True apenas se o hash dos dígitos verificadores coincidir.
+    """
     if len(numeros) != 11 or len(set(numeros)) == 1: return False
     soma = sum(int(numeros[i]) * (10 - i) for i in range(9))
     d1 = (soma * 10 % 11) % 10
@@ -20,93 +24,115 @@ def validar_cpf(numeros):
     d2 = (soma * 10 % 11) % 10
     return d1 == int(numeros[9]) and d2 == int(numeros[10])
 
-def analisar_texto_completo(texto):
-    resultados = []
+def analyze_text(texto):
+    findings = []
     
-    # --- CAMADA 1: AUDITORIA DE FORMATOS (REGEX) ---
+    # --- ETAPA 1: PATTERN MATCHING (REGEX) ---
 
-    # 1. CPF (Com validação matemática)
+    # 1. CPF (Regex + Validação Algorítmica)
     regex_cpf = r'(?:\D|^)(\d{3}\.?\d{3}\.?\d{3}-?\d{2})(?:\D|$)'
     for match in re.finditer(regex_cpf, texto):
-        cpf_bruto = match.group(1)
-        cpf_limpo = re.sub(r'\D', '', cpf_bruto)
-        if validar_cpf(cpf_limpo):
-            resultados.append(f"[CRÍTICO] CPF Válido detectado: {cpf_bruto}")
+        cpf_raw = match.group(1)
+        cpf_clean = re.sub(r'\D', '', cpf_raw)
+        
+        if validate_mod11(cpf_clean):
+            findings.append(f"[CRÍTICO] CPF detectado: {cpf_raw}")
 
-    # 2. RG (Baseado em Contexto)
+    # 2. RG (Lookaround Contextual)
+    # Exige a presença de keywords (RG, Identidade, SSP) para evitar falsos positivos com inteiros.
     regex_rg = r'(?:RG|Identidade|Reg\.? Geral)[:\s]\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dX])'
     for match in re.finditer(regex_rg, texto, re.IGNORECASE):
-        resultados.append(f"[ALERTA] RG detectado: {match.group(1)}")
+        findings.append(f"[ALERTA] Documento RG detectado: {match.group(1)}")
 
-    # 3. ENDEREÇO COMPLETO (Novo Módulo GDF)
-    # Padrão 1: Ruas e Avenidas
-    regex_rua = r'(?:Rua|Av\.|Avenida|Alameda|Travessa|Estrada)\s+[A-Za-zÀ-ú\s\.]+,?\s*\d+'
-    for match in re.finditer(regex_rua, texto, re.IGNORECASE):
-        resultados.append(f"[ATENÇÃO] Endereço (Logradouro) detectado: {match.group()}")
+    # 3. Detecção de Endereços
+    # Padrão A: Logradouros comuns
+    regex_street = r'(?:Rua|Av\.|Avenida|Alameda|Travessa|Estrada)\s+[A-Za-zÀ-ú\s\.]+,?\s*\d+'
+    for match in re.finditer(regex_street, texto, re.IGNORECASE):
+        findings.append(f"[ATENÇÃO] Endereço detectado: {match.group()}")
 
-    # Padrão 2: Endereços de Brasília (SQN, SQS, etc.)
-    regex_bsb = r'(?:SQN|SQS|CLN|CLS|Q\.|Quadra|SHIS|SHTN|QE|QI|Q\s?nm)\s*\d+\s*(?:Bloco|Conjunto|Conj\.|Casa|Lt\.|Lote)?\s*[A-Z0-9]*'
-    for match in re.finditer(regex_bsb, texto, re.IGNORECASE):
-        resultados.append(f"[ATENÇÃO] Endereço (Brasília/DF) detectado: {match.group()}")
+    # Padrão B: Endereçamento Regional (Distrito Federal)
+    regex_df = r'(?:SQN|SQS|CLN|CLS|Q\.|Quadra|SHIS|SHTN|QE|QI|Q\s?nm)\s*\d+\s*(?:Bloco|Conjunto|Conj\.|Casa|Lt\.|Lote)?\s*[A-Z0-9]*'
+    for match in re.finditer(regex_df, texto, re.IGNORECASE):
+        findings.append(f"[ATENÇÃO] Endereço (Padrão DF) detectado: {match.group()}")
 
-    # 4. CEP (Continua importante como backup)
+    # 4. CEP
     regex_cep = r'\b\d{5}-?\d{3}\b'
     for match in re.finditer(regex_cep, texto):
-        resultados.append(f"[ATENÇÃO] CEP detectado: {match.group()}")
+        findings.append(f"[ATENÇÃO] CEP detectado: {match.group()}")
 
     # 5. E-mail
     regex_email = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
     for match in re.finditer(regex_email, texto):
-        resultados.append(f"[ALERTA] E-mail detectado: {match.group()}")
+        findings.append(f"[ALERTA] E-mail detectado: {match.group()}")
 
-    # 6. Telefone (Com filtro de ano)
+    # 6. Telefone (Lógica Refinada para evitar Order IDs)
     regex_tel = r'(?:\(?\d{2}\)?\s?)?(?:9\d{4}|\d{4})[-.\s]?\d{4}'
     for match in re.finditer(regex_tel, texto):
-        tel_bruto = match.group()
-        tel_limpo = re.sub(r'\D', '', tel_bruto)
-        if len(tel_limpo) == 8 and (tel_limpo.startswith("20") or tel_limpo.startswith("19")):
+        tel_raw = match.group()
+        tel_clean = re.sub(r'\D', '', tel_raw)
+        
+        # Filtro de Sanidade:
+        # Se tem 8 dígitos, rejeita se começar com "20" ou "19" (provável ano/data)
+        if len(tel_clean) == 8 and (tel_clean.startswith("20") or tel_clean.startswith("19")):
             continue
-        resultados.append(f"[ALERTA] Telefone detectado: {tel_bruto}")
+            
+        # Filtro Anti-Pedido:
+        # Se tem 8 dígitos e NÃO tem separadores (hífen ou parênteses), ignora.
+        # Isso evita capturar números de pedido como "21246328".
+        if len(tel_clean) == 8 and "-" not in tel_raw and "(" not in tel_raw:
+            continue
 
-    # 7. Cartão de Crédito
-    regex_cartao = r'\b(?:\d{4}[-\s]){3}\d{4}\b'
-    for match in re.finditer(regex_cartao, texto):
-        resultados.append(f"[CRÍTICO] Cartão de Crédito detectado: {match.group()}")
+        findings.append(f"[ALERTA] Telefone detectado: {tel_raw}")
 
-    # --- CAMADA 2: INTELIGÊNCIA ARTIFICIAL (NOMES) ---
+    # 7. Dados Financeiros (Cartão de Crédito)
+    regex_card = r'\b(?:\d{4}[-\s]){3}\d{4}\b'
+    for match in re.finditer(regex_card, texto):
+        findings.append(f"[CRÍTICO] Cartão de Crédito detectado: {match.group()}")
+
+    # --- ETAPA 2: PROCESSAMENTO DE LINGUAGEM NATURAL (NER) ---
     doc = nlp(texto)
     
-    # LISTA DE EXCLUSÃO (Blacklist atualizada)
-    termos_ignorados = [
+    # Blacklist de Termos Administrativos (Stopwords de domínio)
+    system_terms = [
         "relatório de auditoria", "governo do distrito", "distrito federal",
         "secretaria de", "diário oficial", "ministério público", 
-        "termo de", "controladoria-geral", "sistema de", "ata de", "edital n"
+        "termo de", "controladoria-geral", "sistema de", "ata de", "edital n",
+        "pedido n", "nota fiscal", "ordem de serviço"
     ]
 
-    for entidade in doc.ents:
-        if entidade.label_ == "PER":
-            if " " in entidade.text: # Tem sobrenome
-                # Verifica Blacklist
-                nome_lower = entidade.text.lower()
-                eh_termo_tecnico = False
-                for termo in termos_ignorados:
-                    if termo in nome_lower:
-                        eh_termo_tecnico = True
+    for ent in doc.ents:
+        if ent.label_ == "PER":
+            if " " in ent.text: # Filtra nomes únicos/apelidos
+                name_lower = ent.text.lower()
+                is_system_term = False
+                
+                # Verifica se a entidade está na blacklist
+                for term in system_terms:
+                    if term in name_lower:
+                        is_system_term = True
                         break
                 
-                if not eh_termo_tecnico:
-                    resultados.append(f"[ATENÇÃO] Nome Pessoal (IA): {entidade.text}")
+                if not is_system_term:
+                    findings.append(f"[ATENÇÃO] Pessoa Identificada (NLP): {ent.text}")
 
-    return resultados
+    return findings
 
-# --- EXEMPLO DE EXECUÇÃO ---
+# --- TESTE UNITÁRIO (Execução local) ---
 if __name__ == "__main__":
-    texto_exemplo = """
-    Ata de Reunião - 20/01/2026.
-    O servidor João da Silva reside na SQN 302 Bloco B.
-    Seu RG é 1.234.567 SSP/DF e o CEP 70000-000.
+    # Payload de teste com o caso de borda (Pedido vs Telefone)
+    test_payload = """
+    Status do Pedido Nº: 21246328 (Deve ser IGNORADO).
+    Cliente: SARA GUIMARÃES DOS SANTOS.
+    Telefone de Contato: (61) 99999-8888 (Deve ser DETECTADO).
+    Alternativo: 3344-5566 (Deve ser DETECTADO pois tem hífen).
+    Endereço: SQN 102 Bloco A.
     """
-    print("--- INICIANDO AUDITORIA ---")
-    analise = analisar_texto_completo(texto_exemplo)
-    for item in analise:
-        print(item)
+    
+    print("--- INICIANDO SCAN ---")
+    results = analyze_text(test_payload)
+    
+    if not results:
+        print("Nenhum dado sensível encontrado.")
+    else:
+        for item in results:
+            print(item)
