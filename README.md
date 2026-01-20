@@ -1,4 +1,4 @@
-# Guardião LGPD - Automação de Proteção de Dados (Participa DF)
+# Automação de Proteção de Dados (Participa DF)
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![NLP](https://img.shields.io/badge/AI-spaCy-green)
