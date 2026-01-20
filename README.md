@@ -1,44 +1,35 @@
-# 🛡️ Solução de Detecção de Dados Pessoais - Desafio Participa DF
-> **Categoria:** Acesso à Informação
-> **Status:** ✅ Solução Validada
+# Detector de Dados Pessoais (LGPD) - Hackathon Participa DF
 
-Esta solução implementa um pipeline de auditoria automática para identificar dados pessoais sensíveis em documentos públicos, conforme exigido pela LGPD.
+**Categoria:** Acesso à Informação
 
-A abordagem é híbrida, unindo a precisão matemática de **Expressões Regulares (Regex)** com a inteligência contextual de **Processamento de Linguagem Natural (NLP/IA)**.
+## Descrição do Projeto
+Este projeto consiste em um script em Python desenvolvido para automatizar a identificação de dados pessoais sensíveis em documentos públicos e pedidos de acesso à informação. O objetivo é apoiar a conformidade com a Lei Geral de Proteção de Dados (LGPD), garantindo a tarja correta de informações antes da publicação.
 
-## 🧠 Lógica da Solução (Diferenciais)
+A solução utiliza uma abordagem híbrida para mitigar falsos positivos, combinando validação matemática (para documentos numerados) e Processamento de Linguagem Natural (para nomes e contextos).
 
-O algoritmo opera em **3 Camadas de Defesa** para minimizar Falsos Positivos:
+## Funcionalidades Técnicas
 
-1.  **Camada Matemática (Alta Precisão):**
-    * **CPF:** Não apenas identifica o formato, mas valida os dígitos verificadores (algoritmo Módulo 11).
-    * **Cartão de Crédito:** Detecta sequências financeiras válidas (ex: 4 blocos de 4 dígitos).
+### 1. Validação de Dados Estruturados (Regex e Matemática)
+Diferente de buscas simples por texto, o sistema valida a integridade dos dados:
+* **CPF:** Verifica formato e aplica o algoritmo de dígito verificador (Módulo 11) para confirmar se o documento é real.
+* **Cartão de Crédito:** Identifica sequências numéricas de cartões financeiros.
 
-2.  **Camada Contextual (Filtro de Ruído):**
-    * **RG:** Utiliza "Lookaround" para identificar RGs apenas se acompanhados de termos como "RG", "Identidade" ou "SSP", evitando confusão com valores monetários.
-    * **Endereços:** Adaptado para a realidade do GDF, detectando padrões locais como `SQN`, `SQS`, `Bloco`, `Setor`, além de logradouros comuns (`Rua`, `Av.`).
+### 2. Análise Contextual e Regionalização
+Implementação de regras de negócio específicas para evitar falsos positivos comuns na administração pública:
+* **RGs:** São identificados apenas quando acompanhados de termos qualificadores (ex: "RG", "Identidade", "SSP"), evitando confusão com valores monetários ou numeração de processos.
+* **Endereços do DF:** O sistema foi adaptado para reconhecer a nomenclatura urbana de Brasília (SQN, SQS, Blocos, Setores), além dos logradouros convencionais.
 
-3.  **Camada de Inteligência Artificial (spaCy):**
-    * Utiliza o modelo `pt_core_news_sm` para detectar Nomes de Pessoas (`PER`).
-    * **Lista de Exclusão (Blacklist):** Implementa filtro administrativo para ignorar termos burocráticos que parecem nomes (ex: "Relatório de Auditoria", "Secretaria de Estado", "Diário Oficial"), garantindo que apenas pessoas reais sejam marcadas.
+### 3. Detecção de Nomes (NLP) e Filtro de Exclusão
+Utiliza a biblioteca *spaCy* (modelo `pt_core_news_sm`) para reconhecimento de entidades nomeadas.
+* **Blacklist Administrativa:** Foi implementado um filtro de exclusão para impedir que termos burocráticos (como "Relatório de Auditoria", "Secretaria de Estado", "Diário Oficial") sejam classificados erroneamente como nomes de pessoas.
 
-## 🛠️ Instalação e Dependências
+## Requisitos para Execução
 
-A solução foi desenvolvida em **Python 3**.
+* Python 3.8 ou superior
+* Biblioteca spaCy
+* Modelo de língua portuguesa (`pt_core_news_sm`)
 
-1.  **Instale as bibliotecas necessárias:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-2.  **Baixe o modelo de língua portuguesa da IA:**
-    ```bash
-    python -m spacy download pt_core_news_sm
-    ```
-
-## 🚀 Como Executar
-
-Para realizar a varredura em um arquivo ou texto:
-
+### Instalação das Dependências
 ```bash
-python main.py
+pip install -r requirements.txt
+python -m spacy download pt_core_news_sm
