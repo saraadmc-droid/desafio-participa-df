@@ -49,7 +49,7 @@ Regras de negócio para evitar Falsos Positivos:
 
 ---
 
-## 🛠️ Como Executar
+## Como Executar
 
 A solução foi desenvolvida em **Python 3** pela facilidade e manutenção.
 
