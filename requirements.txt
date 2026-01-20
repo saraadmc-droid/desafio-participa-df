@@ -1,4 +1,5 @@
 spacy>=3.0.0
+scikit-learn
 # Nota para a Banca:
 # O projeto requer o download do modelo em português.
 # Após instalar as dependências, execute:
