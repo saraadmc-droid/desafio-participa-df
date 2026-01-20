@@ -14,47 +14,48 @@ A ferramenta resolve o gargalo da revisão manual, mitigando riscos de vazamento
 
 ---
 
-## Diferenciais 
+## 🚀 Por que esta solução é diferente? (Diferenciais Técnicos)
 
-A solução se destaca pela engenharia aplicada para **reduzir falsos positivos** (não marcar o que não é dado pessoal) e garantir a integridade da detecção:
+Muitas soluções de mercado dependem de APIs externas ou validações superficiais. A minha abordagem foi desenhada com foco em **Soberania de Dados** e **Engenharia Robusta**:
 
-### 1. Camada de Validação Algorítmica (MathCheck)
-Não basta encontrar números. O sistema aplica validações matemáticas reais:
-* **CPF:** Verifica integridade via algoritmo Módulo 11 (dígitos verificadores). Sequências aleatórias são ignoradas.
-* **Cartão de Crédito:** Detecta padrões financeiros (PAN) de 16 dígitos agrupados.
+### 1. Privacidade por Design (Local & Offline)
+Diferente de soluções que enviam dados para APIs de terceiros (como OpenAI/ChatGPT), este script roda **100% localmente**.
+* **O dado do cidadão nunca sai do ambiente do GDF.**
+* Não há custos com tokens de API.
+* Conformidade total com a soberania de dados exigida pela LGPD.
 
-### 2. Inteligência Contextual (Anti-Ruído)
-Regras de negócio implementadas para o contexto administrativo:
-* **Distinção de Telefones vs. Protocolos:** Um algoritmo analisa a formatação. Números de 8 dígitos "secos" (comuns em números de pedidos ou matrículas) são ignorados; apenas formatos telefônicos válidos (com hífen ou DDD) são capturados.
-* **Endereçamento Universal:** Em vez de listas fixas de ruas, o sistema utiliza um padrão estrutural (`Logradouro + Vírgula + Número`) capaz de detectar desde endereços urbanos (SQN, SQS) até rurais, sem necessidade de manutenção constante de listas.
+### 2. Validação Matemática Real
+Fugi do erro comum de usar apenas "Expressões Regulares (Regex)" simples.
+* **CPF:** O sistema implementa o algoritmo de **Módulo 11**. Ele não apenas acha números com 11 dígitos, ele calcula se o dígito verificador é válido. Se for um número aleatório, o sistema ignora.
+* **Cartão de Crédito:** Detecta sequências financeiras válidas, ignorando números longos de processos ou matrículas.
 
-### 3. Anonimização Automática (Privacy by Design)
-O script não apenas "alerta", ele **resolve**.
-* **Output Sanitizado:** Gera automaticamente uma versão do texto onde os dados sensíveis são substituídos por *placeholders* (ex: `[CPF OMITIDO]`).
-* **Relatório JSON:** Gera logs estruturados prontos para integração com APIs ou dashboards de monitoramento do GDF.
-
----
-
-## Arquitetura da Solução
-
-O pipeline de processamento opera em três estágios:
-
-| Estágio | Tecnologia | Função |
-| :--- | :--- | :--- |
-| **1. Varredura Rápida** | *Regex Avançado* | Identificação de padrões estruturados (CPF, E-mail, CEP, Cartões). |
-| **2. Análise Semântica** | *spaCy (PLN)* | A IA lê o texto para encontrar Entidades Nomeadas (Pessoas e Locais) que não seguem padrão fixo. Inclui *Blacklist* para ignorar nomes de órgãos públicos. |
-| **3. Sanitização** | *String Replacement* | Substituição dos dados originais por tags de segurança e geração do relatório de risco. |
+### 3. Inteligência Contextual (Anti-Ruído)
+Como auditora, sei que o GDF usa muitos códigos numéricos. Criei regras de negócio para evitar Falsos Positivos:
+* **Protocolos vs Telefones:** O algoritmo distingue um número de matrícula/protocolo (ex: `21246328`) de um telefone real.
+* **Blacklist Administrativa:** A IA foi treinada para ignorar termos como "Secretaria de Estado" ou "Relatório de Auditoria", focando apenas em nomes de pessoas físicas.
 
 ---
 
-## Instalação e Uso
+## ⚙️ O Pipeline de Processamento
 
-### Pré-requisitos
-* Python 3.8 ou superior.
+1.  **Entrada:** Texto cru (copiado de processos, e-mails ou PDFs).
+2.  **Processamento Híbrido:**
+    * *Camada 1:* Validação Matemática (CPF/Cartão).
+    * *Camada 2:* Regex Contextual (RG, E-mail, Telefone).
+    * *Camada 3:* IA/PLN com spaCy (Nomes e Locais não estruturados).
+3.  **Saída:**
+    * **Relatório JSON:** Log técnico estruturado com nível de risco.
+    * **Texto Tarjado:** Versão do documento pronta para publicação (ex: `[CPF OMITIDO]`).
 
-### 1. Configuração do Ambiente
-Clone o repositório e instale as dependências:
+---
 
+## 🛠️ Como Executar
+
+A solução foi desenvolvida em **Python 3** pela facilidade de auditoria do código e manutenção.
+
+### Instalação
 ```bash
 pip install -r requirements.txt
 python -m spacy download pt_core_news_sm
+
+---
