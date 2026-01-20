@@ -1,61 +1,76 @@
-# Automação de Proteção de Dados (Participa DF)
+#  Anonimização Inteligente
+### Desafio Participa DF | Categoria: Acesso à Informação
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![NLP](https://img.shields.io/badge/AI-spaCy-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
 
-> **Categoria:** Acesso à Informação | **Desafio:** Transparência com Privacidade.
+## Objetivo do Projeto
+Esta solução foi desenvolvida para automatizar a identificação de **dados pessoais sensíveis** em pedidos de Acesso à Informação (LAI), garantindo a conformidade com a **Lei Geral de Proteção de Dados (LGPD)**.
 
-## Sobre o Projeto
-O objetivo é processar documentos públicos e identificar automaticamente dados pessoais sensíveis, gerando uma versão segura para publicação.
-
-A ferramenta resolve o problema da revisão manual, mitigando riscos de vazamento de dados, através de uma abordagem híbrida de **Expressões Regulares (Regex)** e **Processamento de Linguagem Natural (PLN)**.
+O sistema atua como um "filtro inteligente" que processa documentos, valida a veracidade dos dados (matemática) e o contexto (IA), gerando automaticamente uma versão tarjada (anonimizada) pronta para publicação no Portal Participa DF.
 
 ---
 
-## Diferenciais Técnicos
+## Diferenciais Técnicos e Robustez
 
-Muitas soluções de mercado dependem de APIs externas ou validações superficiais. A minha abordagem foi desenhada com foco em **Soberania de Dados** e **Engenharia Robusta**:
+Para mitigar falsos positivos e garantir a segurança jurídica, a solução utiliza uma abordagem híbrida:
 
-### 1. Privacidade (Local & Offline)
-Diferente de soluções que enviam dados para APIs de terceiros (como OpenAI/ChatGPT), este script roda **100% localmente**.
-* **O dado do cidadão nunca sai do ambiente do GDF.**
-* Não há custos com tokens de API.
-* Conformidade total com a soberania de dados exigida pela LGPD.
+### 1. Validação Algorítmica (Não apenas Regex)
+* **CPF:** Implementação do algoritmo **Módulo 11** (Dígitos Verificadores). O sistema ignora sequências numéricas aleatórias e detecta apenas documentos válidos.
+* **Cartão de Crédito:** Validação de padrões financeiros (PAN) de 16 dígitos.
 
-### 2. Validação Matemática Real
-Fugi do erro comum de usar apenas "Expressões Regulares (Regex)" simples.
-* **CPF:** O sistema implementa o algoritmo de **Módulo 11**. Ele não apenas acha números com 11 dígitos, ele calcula se o dígito verificador é válido. Se for um número aleatório, o sistema ignora.
-* **Cartão de Crédito:** Detecta sequências financeiras válidas, ignorando números longos de processos ou matrículas.
+### 2. Inteligência Artificial Contextual (PLN)
+Utilizamos a biblioteca **spaCy** (`pt_core_news_sm`) para Processamento de Linguagem Natural.
+* **Detecção de Nomes:** Identifica nomes de pessoas em textos não estruturados.
+* **Filtro de Ruído:** Blacklist inteligente que ignora termos administrativos do GDF (ex: "Secretaria de Estado", "Relatório Anual"), evitando que órgãos públicos sejam marcados como pessoas.
 
-### 3. Inteligência Contextual 
-Regras de negócio para evitar Falsos Positivos:
-* **Protocolos vs Telefones:** O algoritmo distingue um número de matrícula/protocolo (ex: `21246328`) de um telefone.
-* **Blacklist Administrativa:** A IA foi treinada para ignorar termos, focando apenas em nomes de pessoas físicas.
+### 3. Regras de Negócio (Anti-Falso Positivo)
+* **Telefone vs. Protocolo:** Algoritmo capaz de distinguir um número de telefone real de um número de protocolo ou matrícula (comum em documentos públicos), baseando-se em formatação e dígitos.
+* **Privacidade por Design:** A solução roda **100% Offline**. Nenhum dado do cidadão é enviado para APIs externas (como ChatGPT), garantindo a soberania dos dados.
 
 ---
 
-## O Pipeline de Processamento
+## Estrutura do Projeto
 
-1.  **Entrada:** Texto cru (copiado de processos, e-mails ou PDFs).
-2.  **Processamento Híbrido:**
-    * *Camada 1:* Validação Matemática (CPF/Cartão).
-    * *Camada 2:* Regex Contextual (RG, E-mail, Telefone).
-    * *Camada 3:* IA/PLN com spaCy (Nomes e Locais não estruturados).
-3.  **Saída:**
-    * **Relatório JSON:** Log técnico estruturado com nível de risco.
-    * **Texto Tarjado:** Versão do documento pronta para publicação (ex: `[CPF OMITIDO]`).
+A organização dos arquivos segue as boas práticas de engenharia de software:
+
+* `main.py`: **Script Principal**. Contém a lógica de validação matemática, o pipeline de IA e o motor de anonimização.
+* `requirements.txt`: Lista de todas as dependências necessárias para instalação automatizada.
+* `gold_standard.json`: Conjunto de dados "gabarito" (Gold Standard) para validação de métricas.
+* `avaliacao.py`: Script de benchmark que calcula **Precisão** e **Recall** do modelo estatisticamente.
+* `README.md`: Documentação técnica do projeto.
+
+---
+
+## Instalação e Configuração
+
+### Pré-requisitos
+* **Linguagem:** Python 3.9 ou superior.
+* **Gerenciador de Pacotes:** pip.
+
+### Passo a Passo
+1.  **Clone o repositório** (ou baixe os arquivos):
+    ```bash
+    git clone [https://github.com/saraadmc-droide/desafio-participa-df.git](https://github.com/saraadmc-droide/desafio-participa-df.git)
+    cd desafio-participa-df
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Baixe o modelo de língua portuguesa:**
+    ```bash
+    python -m spacy download pt_core_news_sm
+    ```
 
 ---
 
 ## Como Executar
 
-A solução foi desenvolvida em **Python 3** pela facilidade e manutenção.
+Para iniciar a auditoria e anonimização, execute o script principal. O sistema simulará o processamento de um lote de pedidos (Batch Processing).
 
-### Instalação
 ```bash
-pip install -r requirements.txt
-python -m spacy download pt_core_news_sm
-
-
+python main.py
