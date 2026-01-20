@@ -39,12 +39,12 @@ def analisar_texto_completo(texto):
         resultados.append(f"[ALERTA] RG detectado: {match.group(1)}")
 
     # 3. ENDEREÇO COMPLETO (Novo Módulo GDF)
-    # Padrão 1: Ruas e Avenidas (Ex: Rua da Paz, 10 ou Av. Brasil, 500)
+    # Padrão 1: Ruas e Avenidas
     regex_rua = r'(?:Rua|Av\.|Avenida|Alameda|Travessa|Estrada)\s+[A-Za-zÀ-ú\s\.]+,?\s*\d+'
     for match in re.finditer(regex_rua, texto, re.IGNORECASE):
         resultados.append(f"[ATENÇÃO] Endereço (Logradouro) detectado: {match.group()}")
 
-    # Padrão 2: Endereços de Brasília (Ex: SQN 102, QL 10, SQS 304 Bloco A)
+    # Padrão 2: Endereços de Brasília (SQN, SQS, etc.)
     regex_bsb = r'(?:SQN|SQS|CLN|CLS|Q\.|Quadra|SHIS|SHTN|QE|QI|Q\s?nm)\s*\d+\s*(?:Bloco|Conjunto|Conj\.|Casa|Lt\.|Lote)?\s*[A-Z0-9]*'
     for match in re.finditer(regex_bsb, texto, re.IGNORECASE):
         resultados.append(f"[ATENÇÃO] Endereço (Brasília/DF) detectado: {match.group()}")
@@ -99,20 +99,14 @@ def analisar_texto_completo(texto):
 
     return resultados
 
-# --- TESTE FINAL DE AUDITORIA ---
-texto_exemplo = """
-Ata de Reunião - 20/01/2026.
-O servidor João da Silva reside na SQN 302 Bloco B.
-Anteriormente morava na Rua das Acácias, 450 em Águas Claras.
-Seu RG é 1.234.567 SSP/DF e o CEP 70000-000.
-O Relatório de Auditoria foi assinado ontem.
-"""
-
-print("\n--- INICIANDO VARREDURA COMPLETA ---")
-analise = analisar_texto_completo(texto_exemplo)
-
-if not analise:
-    print("Nenhum dado sensível encontrado.")
-else:
+# --- EXEMPLO DE EXECUÇÃO ---
+if __name__ == "__main__":
+    texto_exemplo = """
+    Ata de Reunião - 20/01/2026.
+    O servidor João da Silva reside na SQN 302 Bloco B.
+    Seu RG é 1.234.567 SSP/DF e o CEP 70000-000.
+    """
+    print("--- INICIANDO AUDITORIA ---")
+    analise = analisar_texto_completo(texto_exemplo)
     for item in analise:
         print(item)
