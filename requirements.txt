@@ -1,0 +1,5 @@
+spacy>=3.0.0
+# Nota para a Banca:
+# O projeto requer o download do modelo em português.
+# Após instalar as dependências, execute:
+# python -m spacy download pt_core_news_sm
