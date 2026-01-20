@@ -18,7 +18,7 @@ A ferramenta resolve o problema da revisão manual, mitigando riscos de vazament
 
 Muitas soluções de mercado dependem de APIs externas ou validações superficiais. A minha abordagem foi desenhada com foco em **Soberania de Dados** e **Engenharia Robusta**:
 
-### 1. Privacidade por Design (Local & Offline)
+### 1. Privacidade (Local & Offline)
 Diferente de soluções que enviam dados para APIs de terceiros (como OpenAI/ChatGPT), este script roda **100% localmente**.
 * **O dado do cidadão nunca sai do ambiente do GDF.**
 * Não há custos com tokens de API.
