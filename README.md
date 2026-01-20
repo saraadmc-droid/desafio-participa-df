@@ -10,11 +10,11 @@
 ## Sobre o Projeto
 O objetivo é processar documentos públicos e identificar automaticamente dados pessoais sensíveis, gerando uma versão segura para publicação.
 
-A ferramenta resolve o gargalo da revisão manual, mitigando riscos de vazamento de dados, através de uma abordagem híbrida de **Expressões Regulares (Regex)** e **Processamento de Linguagem Natural (PLN)**.
+A ferramenta resolve o problema da revisão manual, mitigando riscos de vazamento de dados, através de uma abordagem híbrida de **Expressões Regulares (Regex)** e **Processamento de Linguagem Natural (PLN)**.
 
 ---
 
-## 🚀 Por que esta solução é diferente? (Diferenciais Técnicos)
+## Diferenciais Técnicos
 
 Muitas soluções de mercado dependem de APIs externas ou validações superficiais. A minha abordagem foi desenhada com foco em **Soberania de Dados** e **Engenharia Robusta**:
 
@@ -29,10 +29,10 @@ Fugi do erro comum de usar apenas "Expressões Regulares (Regex)" simples.
 * **CPF:** O sistema implementa o algoritmo de **Módulo 11**. Ele não apenas acha números com 11 dígitos, ele calcula se o dígito verificador é válido. Se for um número aleatório, o sistema ignora.
 * **Cartão de Crédito:** Detecta sequências financeiras válidas, ignorando números longos de processos ou matrículas.
 
-### 3. Inteligência Contextual (Anti-Ruído)
-Como auditora, sei que o GDF usa muitos códigos numéricos. Criei regras de negócio para evitar Falsos Positivos:
-* **Protocolos vs Telefones:** O algoritmo distingue um número de matrícula/protocolo (ex: `21246328`) de um telefone real.
-* **Blacklist Administrativa:** A IA foi treinada para ignorar termos como "Secretaria de Estado" ou "Relatório de Auditoria", focando apenas em nomes de pessoas físicas.
+### 3. Inteligência Contextual 
+Regras de negócio para evitar Falsos Positivos:
+* **Protocolos vs Telefones:** O algoritmo distingue um número de matrícula/protocolo (ex: `21246328`) de um telefone.
+* **Blacklist Administrativa:** A IA foi treinada para ignorar termos, focando apenas em nomes de pessoas físicas.
 
 ---
 
@@ -51,7 +51,7 @@ Como auditora, sei que o GDF usa muitos códigos numéricos. Criei regras de neg
 
 ## 🛠️ Como Executar
 
-A solução foi desenvolvida em **Python 3** pela facilidade de auditoria do código e manutenção.
+A solução foi desenvolvida em **Python 3** pela facilidade e manutenção.
 
 ### Instalação
 ```bash
