@@ -1,37 +1,34 @@
-# Detector Inteligente de Dados Pessoais - Desafio Participa DF
+# Detector de Dados Pessoais - Desafio Participa DF
 
 **Categoria:** Acesso à Informação
 
-## Sobre o Projeto
-Esta solução foi desenvolvida para automatizar a identificação e classificação de dados pessoais em documentos públicos. O objetivo é utilizar tecnologia para garantir a privacidade dos cidadãos no portal Participa DF, agilizando a análise de pedidos de acesso à informação.
+## O que este projeto faz?
+Esta ferramenta serve para **ler documentos automaticamente** e apontar onde existem dados pessoais expostos (CPF, RG, Telefone, Endereço, etc.).
 
-O sistema utiliza um pipeline híbrido de Inteligência Artificial e Processamento de Linguagem Natural (NLP), garantindo alta precisão na detecção de dados sensíveis como CPF, RG, E-mail, Telefone e Nomes.
+O objetivo é ajudar o governo a proteger a privacidade dos cidadãos (LGPD) antes de tornar um documento público, evitando que dados sensíveis vazem por acidente.
 
-## Diferenciais Técnicos
+## Principais Funcionalidades
 
-### 1. Alta Precisão com Validação Algorítmica
-O sistema não apenas busca padrões visuais, mas valida matematicamente a integridade dos dados para evitar erros:
-* **Validação de CPF:** Implementação do algoritmo de verificação de dígitos (Módulo 11), garantindo que apenas documentos reais sejam detectados.
-* **Filtros Inteligentes:** Regras de negócio que diferenciam números de protocolo, matrículas e valores monetários de telefones e RGs reais.
+### 1. Validação Real (Não é só visual)
+O sistema não procura apenas por "números que parecem CPF". Ele faz o cálculo matemático (dígito verificador) para garantir que o **CPF é válido**. Se for um número inventado, ele ignora.
 
-### 2. Reconhecimento de Entidades (NER)
-Utilização da biblioteca **spaCy** (modelo `pt_core_news_sm`) para interpretação semântica de textos.
-* A solução identifica nomes de pessoas mesmo em contextos não estruturados.
-* Implementação de *Blacklist* para ignorar termos administrativos comuns (ex: nomes de órgãos, secretarias), focando apenas em pessoas físicas.
+### 2. Filtros Inteligentes
+A ferramenta sabe diferenciar dados reais de outros números comuns em documentos públicos:
+* **Telefones:** Diferencia um número de telefone real de um "Número de Pedido" ou "Protocolo".
+* **RGs:** Só marca se estiver escrito "RG" ou "Identidade" perto do número, para não confundir com valores em dinheiro.
 
-### 3. Adaptação Regional (GDF)
-O algoritmo foi treinado para reconhecer padrões específicos do Distrito Federal, incluindo formatos de endereçamento locais (SQN, SQS, Blocos, Setores), aumentando a efetividade da ferramenta no cenário real do governo.
+### 3. Endereços de qualquer tipo
+O sistema busca por qualquer estrutura de endereço (Nome da Rua + Número), aceitando desde formatos comuns ("Rua X, 10") até endereços rurais ou específicos de Brasília.
 
-## Stack Tecnológica
+### 4. Inteligência Artificial (PLN)
+Usa uma IA de Processamento de Linguagem Natural (PLN) para ler o texto e identificar **Nomes de Pessoas** e **Locais**, mesmo que eles não tenham um formato fixo.
 
-* **Linguagem:** Python 3.8+
-* **NLP:** spaCy
-* **Manipulação de Texto:** Regex Avançado
+---
 
-## Como Executar o Projeto
+## Como Usar
 
-### 1. Instalação
-Clone o repositório e instale as dependências necessárias:
+### Passo 1: Instalação
+Você precisa do Python instalado. Rode os comandos abaixo para baixar as bibliotecas necessárias:
 
 ```bash
 pip install -r requirements.txt
