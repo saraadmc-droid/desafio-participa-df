@@ -8,9 +8,9 @@
 > **Categoria:** Acesso à Informação | **Desafio:** Transparência com Privacidade.
 
 ## Sobre o Projeto
-Esta solução é um **motor de anonimização e auditoria** desenvolvido para o Governo do Distrito Federal (GDF). O objetivo é processar documentos públicos (como pedidos da Lei de Acesso à Informação - LAI) e identificar automaticamente dados pessoais sensíveis, gerando uma versão segura (tarjada) para publicação.
+O objetivo é processar documentos públicos e identificar automaticamente dados pessoais sensíveis, gerando uma versão segura para publicação.
 
-A ferramenta resolve o gargalo da revisão manual, mitigando riscos de vazamento de dados (LGPD) através de uma abordagem híbrida de **Expressões Regulares (Regex)** e **Processamento de Linguagem Natural (PLN)**.
+A ferramenta resolve o gargalo da revisão manual, mitigando riscos de vazamento de dados, através de uma abordagem híbrida de **Expressões Regulares (Regex)** e **Processamento de Linguagem Natural (PLN)**.
 
 ---
 
