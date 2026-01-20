@@ -12,7 +12,7 @@ O sistema atua como um "filtro inteligente" que processa documentos, valida a ve
 
 ---
 
-## Diferenciais Técnicos e Robustez
+## Diferenciais Técnicos
 
 Para mitigar falsos positivos e garantir a segurança jurídica, a solução utiliza uma abordagem híbrida:
 
